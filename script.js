@@ -71,22 +71,70 @@ async function loadQuestionFiles() {
    4. 下载并读取 Word 文档
 ===================================== */
 
+
 async function readWord(file) {
 
-    const response = await fetch(file.download_url);
+    console.log("正在下载文档：", file.name);
+    console.log("下载地址：", file.download_url);
+
+    const response = await fetch(file.download_url, {
+        cache: "no-store"
+    });
 
     if (!response.ok) {
-        throw new Error("文档下载失败：" + file.name);
+        throw new Error(
+            `文档下载失败：${file.name}，HTTP ${response.status}`
+        );
     }
 
     const buffer = await response.arrayBuffer();
 
-    const result = await mammoth.extractRawText({
-        arrayBuffer: buffer
-    });
+    // 检查下载内容是否为 ZIP 文件
+    const bytes = new Uint8Array(buffer);
 
-    return result.value;
+    const isZip =
+        bytes.length >= 4 &&
+        bytes[0] === 0x50 &&
+        bytes[1] === 0x4B;
+
+    console.log("文档大小：", bytes.length);
+    console.log("文件开头字节：", [
+        ...bytes.slice(0, 8)
+    ]);
+
+    if (!isZip) {
+        throw new Error(
+            `文件 ${file.name} 下载成功，但内容不是有效的 DOCX 压缩文件。请检查下载地址或文件本身。`
+        );
+    }
+
+    try {
+
+        const result = await mammoth.extractRawText({
+            arrayBuffer: buffer
+        });
+
+        console.log(
+            `${file.name} 解析完成，文本长度：`,
+            result.value.length
+        );
+
+        return result.value;
+
+    } catch (error) {
+
+        console.error(
+            "Word 解析失败：",
+            file.name,
+            error
+        );
+
+        throw new Error(
+            `Word 解析失败：${file.name}。${error.message}`
+        );
+    }
 }
+
 
 
 /* =====================================
