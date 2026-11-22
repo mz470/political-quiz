@@ -28,40 +28,43 @@ let mode = "all";
 ===================================== */
 
 
+
 async function loadQuestionFiles() {
 
     const url =
         `https://api.github.com/repos/${OWNER}/${REPO}/contents/${QUESTION_PATH}?ref=${BRANCH}`;
 
-    console.log("正在请求：", url);
-
     const response = await fetch(url);
 
-    console.log("HTTP 状态码：", response.status);
-
-    const data = await response.json();
-
-    console.log("GitHub 返回内容：", data);
-
     if (!response.ok) {
+        const error = await response.json();
         throw new Error(
-            `GitHub 请求失败：${response.status}，${data.message || "未知错误"}`
+            `GitHub 请求失败：${response.status}，${error.message}`
         );
     }
 
-    if (!Array.isArray(data)) {
-        throw new Error("GitHub 返回的数据不是文件列表。");
+    const files = await response.json();
+
+    console.log("GitHub 返回的全部文件：", files);
+
+    const wordFiles = files.filter(file => {
+        const name = file.name.toLowerCase();
+
+        return file.type === "file" &&
+            (name.endsWith(".docx") || name.endsWith(".doc"));
+    });
+
+    console.log("筛选出的 Word 文件：", wordFiles);
+
+    if (wordFiles.length === 0) {
+        throw new Error(
+            "GitHub 已连接，但 questions 文件夹中没有识别到 Word 文件。"
+        );
     }
 
-    const files = data.filter(file =>
-        file.type === "file" &&
-        file.name.toLowerCase().endsWith(".docx")
-    );
-
-    console.log("找到的 Word 文件：", files.map(f => f.name));
-
-    return files;
+    return wordFiles;
 }
+
 
 
 /* =====================================
