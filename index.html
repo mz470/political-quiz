@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>政治理论刷题系统</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Word 文档解析库 -->
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.9.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>政治理论刷题系统</h1>
+    <p>章节练习 · 自动识别题型 · 错题记录</p>
+</header>
+
+<main>
+    <section class="toolbar">
+        <button id="refreshBtn">刷新题库</button>
+        <select id="chapterSelect">
+            <option value="">正在加载题库...</option>
+        </select>
+        <button id="startBtn">开始练习</button>
+    </section>
+
+    <section class="stats">
+        <div>题库总数：<span id="totalCount">0</span></div>
+        <div>已答题：<span id="answeredCount">0</span></div>
+        <div>正确率：<span id="accuracy">0%</span></div>
+    </section>
+
+    <section id="quizArea" class="quiz-card">
+        <h2>欢迎使用政治理论刷题系统</h2>
+        <p>请选择章节并开始练习。</p>
+    </section>
+
+    <section class="actions">
+        <button id="prevBtn">上一题</button>
+        <button id="submitBtn">提交答案</button>
+        <button id="nextBtn">下一题</button>
+    </section>
+
+    <section class="extra-actions">
+        <button id="wrongBtn">练习错题</button>
+        <button id="allBtn">全部练习</button>
+    </section>
+
+    <section id="message"></section>
+</main>
+
+<footer>
+    <p>政治理论刷题系统</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
