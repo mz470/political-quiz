@@ -50,8 +50,6 @@ async function loadQuestionFiles() {
     }));
 }
 
-}
-
 
 
 /* =====================================
