@@ -29,40 +29,27 @@ let mode = "all";
 
 
 
+
 async function loadQuestionFiles() {
 
-    const url =
-        `https://api.github.com/repos/${OWNER}/${REPO}/contents/${QUESTION_PATH}?ref=${BRANCH}`;
+    const files = [
+        "导论.docx",
+        "第一章 世界的物质性及其发展规律.docx",
+        "第二章 实践与认识及其发展规律 (1).docx",
+        "第三章 人类社会及其发展规律.docx",
+        "第四章  资本主义的本质及规律.docx",
+        "第五章  资本主义的发展及其趋势.docx",
+        "第六章   社会主义的发展及其规律.docx",
+        "第七章 共产主义崇高理想及其最终实现.docx"
+    ];
 
-    const response = await fetch(url);
+    return files.map(name => ({
+        name: name,
+        download_url:
+            `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${QUESTION_PATH}/${encodeURIComponent(name)}`
+    }));
+}
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-            `GitHub 请求失败：${response.status}，${error.message}`
-        );
-    }
-
-    const files = await response.json();
-
-    console.log("GitHub 返回的全部文件：", files);
-
-    const wordFiles = files.filter(file => {
-        const name = file.name.toLowerCase();
-
-        return file.type === "file" &&
-            (name.endsWith(".docx") || name.endsWith(".doc"));
-    });
-
-    console.log("筛选出的 Word 文件：", wordFiles);
-
-    if (wordFiles.length === 0) {
-        throw new Error(
-            "GitHub 已连接，但 questions 文件夹中没有识别到 Word 文件。"
-        );
-    }
-
-    return wordFiles;
 }
 
 
