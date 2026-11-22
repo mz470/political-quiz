@@ -27,31 +27,40 @@ let mode = "all";
    3. 获取 GitHub 中的 Word 文件
 ===================================== */
 
+
 async function loadQuestionFiles() {
 
     const url =
         `https://api.github.com/repos/${OWNER}/${REPO}/contents/${QUESTION_PATH}?ref=${BRANCH}`;
 
+    console.log("正在请求：", url);
+
     const response = await fetch(url);
+
+    console.log("HTTP 状态码：", response.status);
+
+    const data = await response.json();
+
+    console.log("GitHub 返回内容：", data);
 
     if (!response.ok) {
         throw new Error(
-            "无法读取 GitHub 题库，请检查仓库名称和文件夹路径。"
+            `GitHub 请求失败：${response.status}，${data.message || "未知错误"}`
         );
     }
 
-    const files = await response.json();
+    if (!Array.isArray(data)) {
+        throw new Error("GitHub 返回的数据不是文件列表。");
+    }
 
-    return files
-        .filter(file =>
-            file.type === "file" &&
-            file.name.toLowerCase().endsWith(".docx")
-        )
-        .sort((a, b) =>
-            a.name.localeCompare(b.name, "zh-CN", {
-                numeric: true
-            })
-        );
+    const files = data.filter(file =>
+        file.type === "file" &&
+        file.name.toLowerCase().endsWith(".docx")
+    );
+
+    console.log("找到的 Word 文件：", files.map(f => f.name));
+
+    return files;
 }
 
 
