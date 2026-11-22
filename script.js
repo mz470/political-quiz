@@ -4,7 +4,7 @@
 ===================================== */
 
 const OWNER = "mz470";
-const REPO = "quiz-system";
+const REPO = "political-quiz";
 const BRANCH = "main";
 const QUESTION_PATH = "questions";
 
